@@ -1,45 +1,2094 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UCP Ethical Simulation</title>
-  <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trans-Temporal Ethics Explorer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap');
+        
+        :root {
+            /* Color Palette - Warm, grounded, ancestral */
+            --bg-primary: #FAF8F3;
+            --bg-secondary: #F0EBE3;
+            --bg-tertiary: #E8DFD0;
+            --text-primary: #2A2520;
+            --text-secondary: #5A524A;
+            --text-tertiary: #8A7F73;
+            --accent-primary: #8B6F47;
+            --accent-warm: #B8956A;
+            --accent-cool: #6B8B7C;
+            
+            /* PRF Colors - Matching established toolkit palette */
+            --care: #4A90A4;
+            --fairness: #6B8E4E;
+            --loyalty: #D4A574;
+            --authority: #8B7BA8;
+            --sanctity: #C17B7B;
+            
+            /* Semantic */
+            --border: #D4C7B5;
+            --shadow: rgba(42, 37, 32, 0.08);
+            --shadow-strong: rgba(42, 37, 32, 0.15);
+            
+            /* Typography */
+            --font-display: 'Crimson Pro', serif;
+            --font-body: 'Work Sans', sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Layout */
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .app-header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 2px solid var(--border);
+            position: relative;
+        }
+        
+        .app-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 2px;
+            background: var(--accent-primary);
+        }
+        
+        .app-title {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+        
+        .app-subtitle {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 50px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-warm));
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+        
+        /* Module Navigation */
+        .module-nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        
+        .module-nav-btn {
+            padding: 8px 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .module-nav-btn:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        
+        .module-nav-btn.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+        
+        .module-nav-btn.completed::after {
+            content: ' ✓';
+            color: var(--accent-cool);
+        }
+        
+        /* Module Container */
+        .module {
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+        
+        .module.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .module-header {
+            margin-bottom: 40px;
+        }
+        
+        .module-number {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+        
+        .module-title {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        
+        .module-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        
+        /* Content Blocks */
+        .content-block {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        
+        .content-block h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        
+        .content-block p {
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.7;
+        }
+        
+        .content-block p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Interactive Elements */
+        .interactive-demo {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin: 28px 0;
+        }
+        
+        .demo-scenario {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-primary);
+        }
+        
+        .agent-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text-primary);
+            display: block;
+        }
+        
+        .agent-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 4px 12px var(--shadow);
+            transform: translateY(-2px);
+        }
+        
+        .agent-card.selected {
+            border-color: var(--accent-primary);
+            background: var(--bg-secondary);
+        }
+        
+        .agent-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .agent-prf {
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+        
+        .agent-prediction {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-warm);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-strong);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-primary);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            background: white;
+            color: var(--text-primary);
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Simulation Display */
+        .simulation-output {
+            background: var(--text-primary);
+            color: #E8DFD0;
+            padding: 24px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .simulation-output .event {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(232, 223, 208, 0.2);
+        }
+        
+        .simulation-output .event:last-child {
+            border-bottom: none;
+        }
+        
+        .simulation-output .lambda {
+            color: var(--accent-warm);
+            font-weight: bold;
+        }
+        
+        .simulation-output .success {
+            color: var(--accent-cool);
+        }
+        
+        .simulation-output .failure {
+            color: #B87B8B;
+        }
+        
+        /* PRF Assessment */
+        .prf-question {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .prf-question legend {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding: 0;
+        }
+        
+        .prf-question-text {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        
+        .prf-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .prf-option {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text-primary);
+            display: block;
+            position: relative;
+        }
+        
+        .prf-option:has(input:checked) {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+        
+        .prf-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .prf-option-text {
+            display: block;
+        }
+        
+        /* PRF Profile Display */
+        .prf-profile {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        
+        .prf-bar-container {
+            margin-bottom: 16px;
+        }
+        
+        .prf-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+        
+        .prf-bar-name {
+            font-weight: 600;
+        }
+        
+        .prf-bar-value {
+            color: var(--text-tertiary);
+        }
+        
+        .prf-bar-track {
+            width: 100%;
+            height: 24px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .prf-bar-fill {
+            height: 100%;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+        }
+        
+        .prf-bar-fill.care { background: var(--care); }
+        .prf-bar-fill.fairness { background: var(--fairness); }
+        .prf-bar-fill.loyalty { background: var(--loyalty); }
+        .prf-bar-fill.authority { background: var(--authority); }
+        .prf-bar-fill.sanctity { background: var(--sanctity); }
+        
+        /* P-adic Tree Visualization */
+        .padic-tree {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 24px 0;
+            position: relative;
+        }
+        
+        .tree-node {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            position: relative;
+        }
+        
+        .tree-node::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            width: 2px;
+            height: 12px;
+            background: var(--accent-primary);
+        }
+        
+        .tree-node-label {
+            font-weight: 600;
+            color: var(--accent-primary);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        
+        .tree-node-content {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        /* Reflection Journal */
+        .reflection-entry {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-primary);
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+        
+        .reflection-prompt {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .reflection-text {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        /* Lambda Meter */
+        .lambda-meter {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        
+        .lambda-value {
+            text-align: center;
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .lambda-value.high { color: var(--accent-cool); }
+        .lambda-value.medium { color: var(--accent-warm); }
+        .lambda-value.low { color: #B87B8B; }
+        
+        .lambda-label {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .lambda-description {
+            text-align: center;
+            margin-top: 16px;
+            color: var(--text-secondary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-title {
+                font-size: 2rem;
+            }
+            
+            .app-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .module-title {
+                font-size: 1.8rem;
+            }
+            
+            .content-block {
+                padding: 24px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .mt-24 { margin-top: 24px; }
+        .mb-24 { margin-bottom: 24px; }
+        .hidden { display: none; }
+        
+        /* Skip Link for Screen Readers */
+        .skip-link:focus {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: var(--accent-primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 12px var(--shadow-strong);
+        }
+        
+        /* Enhanced Focus Indicators for Accessibility */
+        button:focus,
+        .agent-card:focus,
+        .prf-option:focus,
+        .module-nav-btn:focus,
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: 3px solid var(--accent-primary);
+            outline-offset: 2px;
+        }
+        
+        /* Screen Reader Only Class */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-tertiary);
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+    </style>
 </head>
 <body>
-  <h1>UCP v2.0 Ethical Simulation</h1>
-  <section>
-    <label for="roleSelect">Role:</label>
-    <select id="roleSelect">
-      <option value="Instructor">Instructor</option>
-      <option value="Researcher">Researcher</option>
-      <option value="Practitioner">Practitioner</option>
-    </select>
-    <button id="loadPresetBtn">Load Preset</button>
-  </section>
-  <section>
-    <label for="moduleSelect">Select Module:</label>
-    <select id="moduleSelect">
-      <option value="Ethical Dilemma: Trolley Problem">Trolley Problem</option>
-      <option value="Whistleblower Simulation">Whistleblower</option>
-      <option value="Paradigm Shift and PRF Drift">PRF Shift</option>
-    </select>
-    <p id="moduleDescription"></p>
-  </section>
-  <section>
-    <h2>Agent Setup</h2>
-    <textarea id="agentInput" rows="8" cols="60">
-[
-  {"name": "Ada", "identity_kernel": "integrity", "ita_role": "engineer", "prf": "consequentialist"},
-  {"name": "Turing", "identity_kernel": "logic", "ita_role": "scientist", "prf": "deontologist"}
-]
-    </textarea><br>
-    <button id="simulateBtn">Run Simulation</button>
-  </section>
-  <section>
-    <h2>Simulation Results</h2>
-    <pre id="output"></pre>
-  </section>
-  <script src="/static/app.js"></script>
+    <!-- Skip Navigation for Screen Readers -->
+    <a href="#main-content" class="skip-link" style="position: absolute; left: -9999px; z-index: 999;">Skip to main content</a>
+    
+    <!-- Screen Reader Announcements -->
+    <div id="screenReaderAnnouncement" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+    
+    <div class="app-container" role="main" id="main-content" aria-label="Trans-Temporal Ethics Explorer Application">
+        <!-- Header -->
+        <header class="app-header">
+            <h1 class="app-title">Trans-Temporal Ethics Explorer</h1>
+            <p class="app-subtitle">Understanding Coordination Across Generations</p>
+        </header>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Course completion progress">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <p class="progress-text" id="progressText" aria-live="polite">Module 0 of 6 Complete</p>
+        </div>
+        
+        <!-- Module Navigation -->
+        <nav class="module-nav" id="moduleNav" aria-label="Module navigation">
+            <button class="module-nav-btn active" data-module="0" aria-label="Module 0 - Orientation">Orientation</button>
+            <button class="module-nav-btn" data-module="1" aria-label="Module 1">Module 1</button>
+            <button class="module-nav-btn" data-module="2" aria-label="Module 2">Module 2</button>
+            <button class="module-nav-btn" data-module="3" aria-label="Module 3">Module 3</button>
+            <button class="module-nav-btn" data-module="4" aria-label="Module 4">Module 4</button>
+            <button class="module-nav-btn" data-module="5" aria-label="Module 5">Module 5</button>
+            <button class="module-nav-btn" data-module="6" aria-label="Module 6">Module 6</button>
+        </nav>
+        
+        <!-- Module 0: Orientation -->
+        <div class="module active" id="module0" role="region" aria-labelledby="module0-title">
+            <div class="module-header">
+                <div class="module-number">Orientation</div>
+                <h2 class="module-title" id="module0-title">Why do people with good intentions still hurt each other?</h2>
+                <p class="module-description">A brief introduction to trans-temporal coordination ethics through an interactive demonstration.</p>
+            </div>
+            
+            <div class="content-block">
+                <h3>A Simple Scenario</h3>
+                <p>Imagine two colleagues trying to help the same struggling team member:</p>
+                
+                <div class="interactive-demo">
+                    <div class="agent-card">
+                        <div class="agent-name">Sarah (Care-Dominant)</div>
+                        <div class="agent-prf">Care: 4.5, Fairness: 2.8</div>
+                        <div class="agent-prediction">"They need immediate emotional support and compassion"</div>
+                    </div>
+                    
+                    <div class="agent-card">
+                        <div class="agent-name">Marcus (Fairness-Dominant)</div>
+                        <div class="agent-prf">Fairness: 4.5, Care: 2.8</div>
+                        <div class="agent-prediction">"They need to follow proper performance improvement procedures"</div>
+                    </div>
+                </div>
+                
+                <p><strong>What happens?</strong> Sarah and Marcus clash. Each tries to force the other to see things "correctly." The struggling team member gets conflicting messages and feels worse. Both Sarah and Marcus feel frustrated and misunderstood.</p>
+                
+                <p>This happens because they're stuck in <strong>OS1 mode</strong> (Operating System 1): forcing prediction agreement. Sarah needs Marcus to predict suffering. Marcus needs Sarah to predict procedural failure. Neither will coordinate until the other "sees it right."</p>
+            </div>
+            
+            <div class="content-block">
+                <h3>There's Another Way</h3>
+                <p>What if Sarah and Marcus could coordinate <em>without</em> agreeing on predictions?</p>
+                
+                <p><strong>OS2 mode</strong> (Operating System 2): They recognize their predictions are different, and <em>that's okay</em>. Instead of forcing agreement, they pool their capabilities:</p>
+                
+                <ul style="margin-left: 24px; color: var(--text-secondary);">
+                    <li style="margin-bottom: 8px;">Sarah monitors emotional wellbeing (her Care expertise)</li>
+                    <li style="margin-bottom: 8px;">Marcus designs fair improvement process (his Fairness expertise)</li>
+                    <li style="margin-bottom: 8px;">Together: compassionate AND fair support</li>
+                    <li style="margin-bottom: 8px;">Team member receives coordinated, complementary help</li>
+                </ul>
+                
+                <p>The key insight: <strong>Different predictions can coordinate through complementary capabilities.</strong></p>
+            </div>
+            
+            <div class="content-block">
+                <h3>What You'll Explore</h3>
+                <p>This app will help you understand:</p>
+                <ul style="margin-left: 24px; color: var(--text-secondary); line-height: 1.8;">
+                    <li>Why you see the world the way you do (your PRF is not just "yours")</li>
+                    <li>How to coordinate with people who see things differently</li>
+                    <li>What you're transmitting to the next generation</li>
+                    <li>How diverse perspectives strengthen validation</li>
+                    <li>The trans-temporal responsibility you carry</li>
+                </ul>
+            </div>
+            
+            <div class="content-block">
+                <h3>Choose Your Path</h3>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="startModule(1)">Start Module 1: Your PRF is Not Yours</button>
+                </div>
+                <p class="mt-24" style="color: var(--text-tertiary); font-size: 0.9rem;">Estimated time: 60-90 minutes for complete journey (can save and resume)</p>
+            </div>
+        </div>
+        
+        <!-- Module 1: Your PRF is Not Yours -->
+        <div class="module" id="module1">
+            <div class="module-header">
+                <div class="module-number">Module 1</div>
+                <h2 class="module-title">Your PRF is Not Yours</h2>
+                <p class="module-description">Your moral foundations encode the thermodynamic history of coordination networks that built you.</p>
+            </div>
+            
+            <div class="content-block">
+                <h3>Quick PRF Assessment</h3>
+                <p>Let's get a rough estimate of your moral foundation profile. For each scenario, select the response that feels most natural to you:</p>
+                
+                <div id="prfQuestionnaire">
+                    <!-- Questions will be inserted here by JavaScript -->
+                </div>
+                
+                <button class="btn btn-primary mt-24" onclick="calculatePRF()" id="calculateBtn" style="display: none;">Calculate My PRF Profile</button>
+            </div>
+            
+            <div class="content-block hidden" id="prfResults">
+                <h3>Your PRF Profile</h3>
+                <p>Here's your approximate moral foundation profile:</p>
+                
+                <div class="prf-profile" id="prfProfileDisplay">
+                    <!-- PRF bars will be inserted here -->
+                </div>
+                
+                <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 16px;">Note: This is a simplified 8-question assessment. For a full PRF-22 profile with 22 scenarios, use the separate PRF-22 Digital E-Twin Builder tool.</p>
+            </div>
+            
+            <div class="content-block hidden" id="assemblyHistory">
+                <h3>Assembly History: Where Did This Come From?</h3>
+                <p>Your highest foundation is <strong id="dominantFoundation"></strong>. Let's map the coordination network that built this value:</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Who taught you about <span id="foundationLabel"></span>? (List 2-3 key people)</label>
+                    <input type="text" class="form-input" id="assemblyPeople" placeholder="e.g., Mother, Teacher, Grandfather">
+                </div>
+                
+                <button class="btn btn-secondary" onclick="generateTree()">Generate My Assembly Tree</button>
+                
+                <div class="padic-tree hidden" id="assemblyTree">
+                    <!-- Tree visualization will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="content-block hidden" id="plasticityDemo">
+                <h3>PRF Plasticity: You Can Modify Through Practice</h3>
+                <p>Your PRF values are <em>initial conditions</em>, not unchangeable fate. Through systematic practice, you can build new coordination networks that modify your profile.</p>
+                
+                <div class="lambda-meter">
+                    <div class="lambda-value medium" id="prfSliderValue">3.5</div>
+                    <div class="lambda-label">Current Care Value</div>
+                    <div class="lambda-description">
+                        <p>With 30 days of practice: Care-3.5 → Care-4.2</p>
+                        <p style="margin-top: 8px;">New thermodynamic residue from adult OS2 coordination adds to ancestral patterns.</p>
+                    </div>
+                </div>
+                
+                <p><strong>Key insight:</strong> You inherit initial PRF values, but you can heal damaged ancestral patterns through deliberate practice before transmitting them forward.</p>
+            </div>
+            
+            <div class="btn-group mt-24">
+                <button class="btn btn-secondary" onclick="prevModule()">← Previous</button>
+                <button class="btn btn-primary" onclick="completeModule(1)">Continue to Module 2 →</button>
+            </div>
+        </div>
+        
+        <!-- Module 2: Coordination Simulator -->
+        <div class="module" id="module2">
+            <div class="module-header">
+                <div class="module-number">Module 2</div>
+                <h2 class="module-title">The Coordination Simulator</h2>
+                <p class="module-description">Experience the difference between OS1 (prediction forcing) and OS2 (capability pooling)</p>
+            </div>
+            
+            <div class="content-block">
+                <h3>Design a Mental Health Policy Committee</h3>
+                <p>Select 3 agents to serve on a university mental health policy committee. Each has different PRFs and predictions:</p>
+                
+                <div id="agentLibrary" role="group" aria-label="Available committee members">
+                    <button class="agent-card" onclick="toggleAgent('chen')" aria-pressed="false" data-agent="chen">
+                        <div class="agent-name">Dr. Sarah Chen</div>
+                        <div class="agent-prf">Care: 4.8, Fairness: 3.2</div>
+                        <div class="agent-prediction">"Students are suffering - we need immediate support"</div>
+                        <span class="sr-only">Select Dr. Sarah Chen for committee</span>
+                    </button>
+                    
+                    <button class="agent-card" onclick="toggleAgent('rodriguez')" aria-pressed="false" data-agent="rodriguez">
+                        <div class="agent-name">Prof. Marcus Rodriguez</div>
+                        <div class="agent-prf">Fairness: 4.5, Authority: 4.0</div>
+                        <div class="agent-prediction">"Procedures are inconsistent - we need standardized policies"</div>
+                        <span class="sr-only">Select Professor Marcus Rodriguez for committee</span>
+                    </button>
+                    
+                    <button class="agent-card" onclick="toggleAgent('wong')" aria-pressed="false" data-agent="wong">
+                        <div class="agent-name">Dean Patricia Wong</div>
+                        <div class="agent-prf">Authority: 4.6, Sanctity: 3.8</div>
+                        <div class="agent-prediction">"We must follow state guidelines and protect professional boundaries"</div>
+                        <span class="sr-only">Select Dean Patricia Wong for committee</span>
+                    </button>
+                    
+                    <button class="agent-card" onclick="toggleAgent('kim')" aria-pressed="false" data-agent="kim">
+                        <div class="agent-name">Student Rep. Alex Kim</div>
+                        <div class="agent-prf">Loyalty: 4.7, Care: 3.5</div>
+                        <div class="agent-prediction">"Admin will ignore student needs - we need student voice protected"</div>
+                        <span class="sr-only">Select Student Representative Alex Kim for committee</span>
+                    </button>
+                </div>
+                
+                <p class="mt-24" id="teamStatus">Selected: <span id="selectedCount">0</span>/3 agents</p>
+                
+                <button class="btn btn-primary mt-24" onclick="runSimulation('os1')" id="runOS1Btn" disabled>Run Simulation (OS1 Mode)</button>
+            </div>
+            
+            <div class="content-block hidden" id="simulationResults">
+                <h3>Simulation Results</h3>
+                <div class="simulation-output" id="simOutput" role="log" aria-live="polite" aria-atomic="true" aria-label="Coordination simulation output">
+                    <!-- Simulation output will be inserted here -->
+                </div>
+                
+                <div class="lambda-meter mt-24">
+                    <div class="lambda-value low" id="finalLambda">0.28</div>
+                    <div class="lambda-label">Final Team Lambda (λ)</div>
+                    <div class="lambda-description" id="lambdaDescription">
+                        λ < 0.4: Coordination collapsed. Committee disbanded.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-block hidden" id="os2Intervention">
+                <h3>Add OS2 Coordination Structure</h3>
+                <p>The committee failed in OS1 mode (forcing prediction agreement). Let's add an OS2 structure:</p>
+                
+                <div class="interactive-demo">
+                    <div class="prf-option" onclick="selectIntervention('capability')">
+                        <strong>Capability Mapping</strong><br>
+                        Each member states what they're good at and what they need help with
+                    </div>
+                    <div class="prf-option" onclick="selectIntervention('dual-track')">
+                        <strong>Dual-Track Process</strong><br>
+                        Separate "Values" (what we care about) from "Methods" (how to get there)
+                    </div>
+                    <div class="prf-option" onclick="selectIntervention('rotation')">
+                        <strong>Rotating Facilitator</strong><br>
+                        Different PRF leads each week (Care → Fairness → Authority)
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary mt-24" onclick="runSimulation('os2')" id="runOS2Btn" disabled>Re-run with OS2 Structure</button>
+            </div>
+            
+            <div class="btn-group mt-24">
+                <button class="btn btn-secondary" onclick="prevModule()">← Previous</button>
+                <button class="btn btn-primary" onclick="completeModule(2)">Continue to Module 3 →</button>
+            </div>
+        </div>
+        
+        <!-- Module 3: Formal Agnosticism Demo -->
+        <div class="module" id="module3">
+            <div class="module-header">
+                <div class="module-number">Module 3</div>
+                <h2 class="module-title">Formal Agnosticism Demo</h2>
+                <p class="module-description">Same formalism, different PRF interpretations, empirical convergence</p>
+            </div>
+            
+            <div class="content-block">
+                <h3>The Substrate: Lambda (λ)</h3>
+                <p>The Universal Coordination Protocol uses a mathematical formalism:</p>
+                
+                <div class="lambda-meter">
+                    <div style="text-align: center; font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 16px;">
+                        λ = ⟨C<sub>PFC</sub>⟩ × (1 - ⟨V<sub>Surv</sub>⟩)
+                    </div>
+                    <div class="lambda-description">
+                        <p>When λ > 0.6: Coordination capacity functional</p>
+                        <p>When λ < 0.4: Coordination collapsed</p>
+                    </div>
+                </div>
+                
+                <p>But what does this <em>mean</em>? That depends on your PRF...</p>
+            </div>
+            
+            <div class="content-block">
+                <h3>Five PRF Interpretations</h3>
+                <p>Click each to see how different moral foundations interpret the same formalism:</p>
+                
+                <div id="prfInterpretations">
+                    <div class="prf-option" onclick="showInterpretation('care')">
+                        <strong style="color: var(--care);">Care Interpretation</strong><br>
+                        λ = capacity to respond compassionately without burnout
+                    </div>
+                    
+                    <div class="prf-option" onclick="showInterpretation('fairness')">
+                        <strong style="color: var(--fairness);">Fairness Interpretation</strong><br>
+                        λ = capacity to maintain procedural consistency under pressure
+                    </div>
+                    
+                    <div class="prf-option" onclick="showInterpretation('loyalty')">
+                        <strong style="color: var(--loyalty);">Loyalty Interpretation</strong><br>
+                        λ = capacity to preserve group identity during change
+                    </div>
+                    
+                    <div class="prf-option" onclick="showInterpretation('sanctity')">
+                        <strong style="color: var(--sanctity);">Sanctity Interpretation</strong><br>
+                        λ = capacity to protect sacred boundaries against violation
+                    </div>
+                    
+                    <div class="prf-option" onclick="showInterpretation('authority')">
+                        <strong style="color: var(--authority);">Authority Interpretation</strong><br>
+                        λ = capacity to sustain institutional order during stress
+                    </div>
+                </div>
+                
+                <div class="interactive-demo hidden" id="interpretationDetail">
+                    <!-- Selected interpretation details will appear here -->
+                </div>
+            </div>
+            
+            <div class="content-block">
+                <h3>Empirical Convergence Test</h3>
+                <p>Even though these five PRFs interpret λ differently, their strategies all maintain coordination capacity. Let's test pooling all five:</p>
+                
+                <button class="btn btn-primary" onclick="testConvergence()">Test All Five Strategies Together</button>
+                
+                <div class="simulation-output hidden mt-24" id="convergenceResult">
+                    <!-- Convergence test results will appear here -->
+                </div>
+            </div>
+            
+            <div class="btn-group mt-24">
+                <button class="btn btn-secondary" onclick="prevModule()">← Previous</button>
+                <button class="btn btn-primary" onclick="completeModule(3)">Continue to Module 4 →</button>
+            </div>
+        </div>
+        
+        <!-- Module 4: Commons of Coordination Strategies -->
+        <div class="module" id="module4">
+            <div class="module-header">
+                <div class="module-number">Module 4</div>
+                <h2 class="module-title">The Growing Commons</h2>
+                <p class="module-description">How diverse PRF testing builds a pool of validated OS2 coordination strategies</p>
+            </div>
+            
+            <div class="content-block">
+                <h3>The Pool Growth Timeline</h3>
+                <p>Watch how the commons of validated coordination strategies grows as more PRF perspectives contribute:</p>
+                
+                <div id="commonsTimeline">
+                    <!-- Timeline will be populated by JavaScript -->
+                </div>
+                
+                <button class="btn btn-primary mt-24" onclick="advanceYear()">Advance to Next Year</button>
+                
+                <div class="prf-profile mt-24">
+                    <h4 style="margin-bottom: 16px;">Current Pool of Validated Strategies:</h4>
+                    <div id="strategyPool">
+                        <p style="color: var(--text-tertiary);">Pool is empty. Run Year 1 testing to begin.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-block">
+                <h3>The Validation Mechanism</h3>
+                <p>Notice the pattern:</p>
+                <ul style="margin-left: 24px; color: var(--text-secondary); line-height: 1.8;">
+                    <li>Each PRF discovers strategies from their phenomenological lens</li>
+                    <li>Strategies are tested empirically (does λ improve?)</li>
+                    <li>Successful strategies are added to pool</li>
+                    <li>Convergence tests check if strategies work together</li>
+                    <li>Pool grows through diverse testing, not theoretical agreement</li>
+                </ul>
+                
+                <p class="mt-24"><strong>Key insight:</strong> PRF diversity is not a problem to solve—it's the validation mechanism itself. The more perspectives that test the formalism, the faster the commons grows.</p>
+            </div>
+            
+            <div class="btn-group mt-24">
+                <button class="btn btn-secondary" onclick="prevModule()">← Previous</button>
+                <button class="btn btn-primary" onclick="completeModule(4)">Continue to Module 5 →</button>
+            </div>
+        </div>
+        
+        <!-- Module 5: What Are You Transmitting? -->
+        <div class="module" id="module5">
+            <div class="module-header">
+                <div class="module-number">Module 5</div>
+                <h2 class="module-title">What Are You Transmitting?</h2>
+                <p class="module-description">You are simultaneously product, participant, and transmitter of coordination patterns</p>
+            </div>
+            
+            <div class="content-block">
+                <h3>Part 1: Product (Your Assembly History)</h3>
+                <p>You were built by coordination networks. Let's acknowledge them:</p>
+                
+                <div class="form-group">
+                    <label class="form-label">List 3-5 key people who built your coordination capacity:</label>
+                    <textarea class="form-textarea" id="productPeople" placeholder="e.g., Mother, Father, Grandmother, Teacher Mr. Johnson, Coach Maria"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">What coordination patterns did they transmit to you?</label>
+                    <textarea class="form-textarea" id="productPatterns" placeholder="What did they teach you about working with others?"></textarea>
+                </div>
+            </div>
+            
+            <div class="content-block">
+                <h3>Part 2: Participant (Current State)</h3>
+                <p>Your current PRF profile represents what you're transmitting RIGHT NOW:</p>
+                
+                <div class="prf-profile" id="currentPRFDisplay">
+                    <!-- Will show PRF from Module 1 -->
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Which foundation needs development before you transmit it?</label>
+                    <select class="form-input" id="weakFoundation">
+                        <option value="">Select foundation...</option>
+                        <option value="care">Care</option>
+                        <option value="fairness">Fairness</option>
+                        <option value="loyalty">Loyalty</option>
+                        <option value="authority">Authority</option>
+                        <option value="sanctity">Sanctity</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="content-block">
+                <h3>Part 3: Transmitter (Who Are You Building?)</h3>
+                <p>List people whose PRFs are forming through coordination with you:</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Children, students, mentees, clients:</label>
+                    <textarea class="form-textarea" id="transmitterPeople" placeholder="Who will inherit your coordination patterns?"></textarea>
+                </div>
+                
+                <div class="interactive-demo mt-24">
+                    <h4 style="margin-bottom: 16px;">Transmission Simulator</h4>
+                    <p><strong>Scenario:</strong> Your child has a meltdown at the grocery store.</p>
+                    
+                    <div class="demo-scenario">
+                        <strong>OS1 Response (Prediction Forcing):</strong><br>
+                        "You need to predict this is embarrassing (like I do). Stop crying NOW."<br>
+                        <span style="color: #B87B8B;">→ Child learns: My predictions are wrong. I must comply.</span><br>
+                        <span style="color: #B87B8B;">→ You transmitted: Damaged Authority pattern</span>
+                    </div>
+                    
+                    <div class="demo-scenario">
+                        <strong>OS2 Response (Capability Coordination):</strong><br>
+                        "You're overwhelmed (your prediction). I need to leave quickly (my prediction). Let's coordinate: you carry your favorite toy, I'll shop faster, we both get what we need."<br>
+                        <span style="color: var(--accent-cool);">→ Child learns: Different predictions can coordinate.</span><br>
+                        <span style="color: var(--accent-cool);">→ You transmitted: Functional OS2 pattern</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-block">
+                <h3>Part 4: Practice Plan</h3>
+                <p id="practicePlan">Select a weak foundation above to generate a 30-day practice protocol.</p>
+            </div>
+            
+            <div class="btn-group mt-24">
+                <button class="btn btn-secondary" onclick="prevModule()">← Previous</button>
+                <button class="btn btn-primary" onclick="completeModule(5)">Continue to Module 6 →</button>
+            </div>
+        </div>
+        
+        <!-- Module 6: The Invitation -->
+        <div class="module" id="module6">
+            <div class="module-header">
+                <div class="module-number">Module 6</div>
+                <h2 class="module-title">The Invitation</h2>
+                <p class="module-description">This is an invitation to test, not a universal truth claim</p>
+            </div>
+            
+            <div class="content-block">
+                <h3>Final Reflections</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">How does YOUR PRF interpret trans-temporal coordination?</label>
+                    <textarea class="form-textarea" id="reflection1" placeholder="What meaning does this framework have from your phenomenological perspective?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">What "future pull" does your interpretation generate?</label>
+                    <textarea class="form-textarea" id="reflection2" placeholder="What are you trying to build across generations?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">What would you modify about this framework based on YOUR phenomenology?</label>
+                    <textarea class="form-textarea" id="reflection3" placeholder="Where does the formalism work for you? Where does it break? What's missing from your PRF perspective?"></textarea>
+                </div>
+                
+                <button class="btn btn-primary mt-24" onclick="saveReflections()">Save Reflections</button>
+            </div>
+            
+            <div class="content-block">
+                <h3>You've Completed the Trans-Temporal Ethics Explorer</h3>
+                
+                <p><strong>You now understand:</strong></p>
+                <ul style="margin-left: 24px; color: var(--text-secondary); line-height: 1.8;">
+                    <li>✓ Your PRF values encode ancestral coordination networks</li>
+                    <li>✓ PRFs are modifiable through systematic practice</li>
+                    <li>✓ OS2 coordinates despite different predictions</li>
+                    <li>✓ Diverse testing builds commons of validated strategies</li>
+                    <li>✓ You transmit patterns to those you build</li>
+                </ul>
+                
+                <p class="mt-24"><strong>Next Steps:</strong></p>
+                <ul style="margin-left: 24px; color: var(--text-secondary); line-height: 1.8;">
+                    <li>Download your reflection journal</li>
+                    <li>Read the full essay for deeper exploration</li>
+                    <li>Use practice apps to develop coordination capacity</li>
+                    <li>Test this framework from YOUR PRF perspective</li>
+                    <li>Report what works and what breaks</li>
+                </ul>
+            </div>
+            
+            <div class="content-block text-center">
+                <p style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; margin-bottom: 24px;">
+                    Be a good ancestor.
+                </p>
+                
+                <div class="btn-group" style="justify-content: center;">
+                    <button class="btn btn-primary" onclick="downloadJournal()">Download Reflection Journal</button>
+                    <button class="btn btn-secondary" onclick="resetApp()">Start Over</button>
+                </div>
+            </div>
+            
+            <div class="btn-group mt-24">
+                <button class="btn btn-secondary" onclick="prevModule()">← Previous</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // State Management
+        let appState = {
+            currentModule: 0,
+            completedModules: [],
+            prfProfile: null,
+            selectedAgents: [],
+            selectedIntervention: null,
+            commonsYear: 0,
+            reflectionJournal: []
+        };
+        
+        // PRF Questions (simplified 8-question version)
+        const prfQuestions = [
+            {
+                text: "A coworker is struggling with their workload and seems stressed.",
+                options: {
+                    care: "Offer emotional support and help lighten their load",
+                    fairness: "Check if workload distribution is fair across team",
+                    loyalty: "Rally the team to support our colleague",
+                    authority: "Follow proper channels to report workload issues",
+                    sanctity: "Respect their personal boundaries and professional space"
+                }
+            },
+            {
+                text: "Your organization is considering a new policy.",
+                options: {
+                    care: "Will this harm vulnerable people?",
+                    fairness: "Is this policy consistently applied to everyone?",
+                    loyalty: "Does this preserve our organizational culture?",
+                    authority: "Does this align with established procedures?",
+                    sanctity: "Does this violate important professional boundaries?"
+                }
+            },
+            {
+                text: "There's conflict between two team members.",
+                options: {
+                    care: "Help them understand each other's feelings",
+                    fairness: "Ensure both get equal opportunity to state their case",
+                    loyalty: "Remind them they're part of the same team",
+                    authority: "Follow conflict resolution protocols",
+                    sanctity: "Maintain appropriate professional distance"
+                }
+            },
+            {
+                text: "A student asks for an extension on an assignment.",
+                options: {
+                    care: "Consider their circumstances compassionately",
+                    fairness: "Apply the same standard to all students",
+                    loyalty: "Support our students when they need help",
+                    authority: "Follow the extension policy consistently",
+                    sanctity: "Maintain academic integrity standards"
+                }
+            },
+            {
+                text: "Your community faces a resource allocation decision.",
+                options: {
+                    care: "Prioritize those most in need",
+                    fairness: "Distribute resources equally",
+                    loyalty: "Take care of our community first",
+                    authority: "Follow established allocation procedures",
+                    sanctity: "Protect sacred community spaces/values"
+                }
+            },
+            {
+                text: "Someone challenges a long-standing tradition.",
+                options: {
+                    care: "Is the tradition causing harm?",
+                    fairness: "Are alternatives being evaluated fairly?",
+                    loyalty: "This tradition defines who we are",
+                    authority: "Changes should follow proper process",
+                    sanctity: "Some traditions should not be questioned"
+                }
+            },
+            {
+                text: "You witness unfair treatment of a colleague.",
+                options: {
+                    care: "Support the person being treated unfairly",
+                    fairness: "Report the procedural violation",
+                    loyalty: "Stand with our colleague",
+                    authority: "Use proper channels to address it",
+                    sanctity: "Some behaviors violate professional ethics"
+                }
+            },
+            {
+                text: "A new initiative requires significant change.",
+                options: {
+                    care: "Will this reduce suffering?",
+                    fairness: "Is this change being implemented fairly?",
+                    loyalty: "Does this strengthen our group?",
+                    authority: "Is there proper justification and process?",
+                    sanctity: "Does this respect important boundaries?"
+                }
+            }
+        ];
+        
+        // Initialize app
+        function initApp() {
+            loadState();
+            renderPRFQuestionnaire();
+            updateProgress();
+        }
+        
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('transTemporalEthicsState');
+            if (saved) {
+                appState = JSON.parse(saved);
+                if (appState.currentModule > 0) {
+                    showModule(appState.currentModule);
+                }
+            }
+        }
+        
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('transTemporalEthicsState', JSON.stringify(appState));
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            const progress = (appState.completedModules.length / 6) * 100;
+            const progressFill = document.getElementById('progressFill');
+            const progressBar = progressFill.parentElement;
+            
+            progressFill.style.width = progress + '%';
+            progressBar.setAttribute('aria-valuenow', Math.round(progress));
+            
+            document.getElementById('progressText').textContent = 
+                `Module ${appState.completedModules.length} of 6 Complete`;
+            
+            // Update nav buttons
+            const navButtons = document.querySelectorAll('.module-nav-btn');
+            navButtons.forEach((btn, idx) => {
+                const isCompleted = appState.completedModules.includes(idx);
+                const isCurrent = idx === appState.currentModule;
+                
+                if (isCompleted) {
+                    btn.classList.add('completed');
+                    btn.setAttribute('aria-label', `Module ${idx} - ${btn.textContent} - Completed`);
+                } else {
+                    btn.setAttribute('aria-label', `Module ${idx} - ${btn.textContent}`);
+                }
+                
+                if (isCurrent) {
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-current', 'true');
+                } else {
+                    btn.classList.remove('active');
+                    btn.removeAttribute('aria-current');
+                }
+            });
+        }
+        
+        // Module navigation
+        function showModule(moduleNum) {
+            document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+            const newModule = document.getElementById('module' + moduleNum);
+            newModule.classList.add('active');
+            appState.currentModule = moduleNum;
+            updateProgress();
+            saveState();
+            
+            // Move focus to module title for screen readers
+            const moduleTitle = newModule.querySelector('.module-title');
+            if (moduleTitle) {
+                moduleTitle.setAttribute('tabindex', '-1');
+                moduleTitle.focus();
+                
+                // Announce module change to screen readers
+                announceToScreenReader(`Navigated to ${moduleTitle.textContent}`);
+            }
+            
+            window.scrollTo(0, 0);
+        }
+        
+        function startModule(moduleNum) {
+            showModule(moduleNum);
+        }
+        
+        function prevModule() {
+            if (appState.currentModule > 0) {
+                showModule(appState.currentModule - 1);
+            }
+        }
+        
+        function completeModule(moduleNum) {
+            if (!appState.completedModules.includes(moduleNum)) {
+                appState.completedModules.push(moduleNum);
+            }
+            showModule(moduleNum + 1);
+        }
+        
+        // Module nav button clicks
+        document.querySelectorAll('.module-nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const moduleNum = parseInt(btn.dataset.module);
+                showModule(moduleNum);
+            });
+        });
+        
+        // Module 1: PRF Assessment
+        function renderPRFQuestionnaire() {
+            const container = document.getElementById('prfQuestionnaire');
+            prfQuestions.forEach((q, idx) => {
+                const qDiv = document.createElement('fieldset');
+                qDiv.className = 'prf-question';
+                qDiv.innerHTML = `
+                    <legend class="prf-question-text">${idx + 1}. ${q.text}</legend>
+                    <div class="prf-options" role="radiogroup" aria-labelledby="question-${idx}-label">
+                        ${Object.entries(q.options).map(([prf, text], optIdx) => `
+                            <label class="prf-option">
+                                <input type="radio" 
+                                       name="question-${idx}" 
+                                       value="${prf}" 
+                                       onchange="selectOption(${idx}, '${prf}')"
+                                       class="sr-only">
+                                <span class="prf-option-text">${text}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+        
+        let selectedAnswers = {};
+        
+        function selectOption(questionIdx, prf) {
+            selectedAnswers[questionIdx] = prf;
+            
+            // Show calculate button if all questions answered
+            if (Object.keys(selectedAnswers).length === prfQuestions.length) {
+                document.getElementById('calculateBtn').style.display = 'inline-block';
+            }
+            
+            // Announce to screen reader
+            announceToScreenReader(`Question ${questionIdx + 1} answered. ${Object.keys(selectedAnswers).length} of ${prfQuestions.length} questions completed.`);
+        }
+        
+        function calculatePRF() {
+            const scores = {
+                care: 0,
+                fairness: 0,
+                loyalty: 0,
+                authority: 0,
+                sanctity: 0
+            };
+            
+            Object.values(selectedAnswers).forEach(prf => {
+                scores[prf]++;
+            });
+            
+            // Normalize to 0-5 scale
+            const total = Object.values(scores).reduce((a, b) => a + b, 0);
+            const normalized = {};
+            Object.entries(scores).forEach(([prf, score]) => {
+                normalized[prf] = Math.round((score / total) * 50) / 10;
+            });
+            
+            appState.prfProfile = normalized;
+            displayPRFProfile();
+            saveState();
+        }
+        
+        function displayPRFProfile() {
+            const container = document.getElementById('prfProfileDisplay');
+            const foundations = ['care', 'fairness', 'loyalty', 'authority', 'sanctity'];
+            const labels = {
+                care: 'Care',
+                fairness: 'Fairness',
+                loyalty: 'Loyalty',
+                authority: 'Authority',
+                sanctity: 'Sanctity'
+            };
+            
+            container.innerHTML = foundations.map(f => {
+                const value = appState.prfProfile[f];
+                const percentage = (value / 5) * 100;
+                return `
+                    <div class="prf-bar-container">
+                        <div class="prf-bar-label">
+                            <span class="prf-bar-name">${labels[f]}</span>
+                            <span class="prf-bar-value">${value.toFixed(1)}</span>
+                        </div>
+                        <div class="prf-bar-track">
+                            <div class="prf-bar-fill ${f}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('prfResults').classList.remove('hidden');
+            document.getElementById('assemblyHistory').classList.remove('hidden');
+            document.getElementById('plasticityDemo').classList.remove('hidden');
+            
+            // Set dominant foundation
+            const dominant = Object.entries(appState.prfProfile)
+                .reduce((a, b) => a[1] > b[1] ? a : b);
+            document.getElementById('dominantFoundation').textContent = labels[dominant[0]];
+            document.getElementById('foundationLabel').textContent = labels[dominant[0]].toLowerCase();
+        }
+        
+        function generateTree() {
+            const people = document.getElementById('assemblyPeople').value;
+            if (!people) return;
+            
+            const dominant = Object.entries(appState.prfProfile)
+                .reduce((a, b) => a[1] > b[1] ? a : b);
+            const foundationLabel = {
+                care: 'Care',
+                fairness: 'Fairness',
+                loyalty: 'Loyalty',
+                authority: 'Authority',
+                sanctity: 'Sanctity'
+            }[dominant[0]];
+            
+            const tree = document.getElementById('assemblyTree');
+            tree.innerHTML = `
+                <div class="tree-node">
+                    <div class="tree-node-label">You (${foundationLabel}-${dominant[1].toFixed(1)})</div>
+                    <div class="tree-node-content">Your current ${foundationLabel} foundation</div>
+                </div>
+                <div class="tree-node">
+                    <div class="tree-node-label">Ancestral OS2 Network</div>
+                    <div class="tree-node-content">${people}</div>
+                </div>
+                <div class="tree-node">
+                    <div class="tree-node-label">Coordination Pattern</div>
+                    <div class="tree-node-content">
+                        These people coordinated (OS2) to scaffold your ${foundationLabel} development.
+                        Your ${foundationLabel}-${dominant[1].toFixed(1)} = thermodynamic residue of their coordination efficiency.
+                    </div>
+                </div>
+            `;
+            tree.classList.remove('hidden');
+        }
+        
+        // Module 2: Coordination Simulator
+        function toggleAgent(agentId) {
+            const card = event.target.closest('.agent-card');
+            const isSelected = card.getAttribute('aria-pressed') === 'true';
+            
+            if (isSelected) {
+                card.classList.remove('selected');
+                card.setAttribute('aria-pressed', 'false');
+                appState.selectedAgents = appState.selectedAgents.filter(a => a !== agentId);
+            } else {
+                if (appState.selectedAgents.length < 3) {
+                    card.classList.add('selected');
+                    card.setAttribute('aria-pressed', 'true');
+                    appState.selectedAgents.push(agentId);
+                } else {
+                    // Announce to screen reader that maximum is reached
+                    announceToScreenReader('Maximum 3 agents already selected. Deselect one first.');
+                    return;
+                }
+            }
+            
+            const count = appState.selectedAgents.length;
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('runOS1Btn').disabled = count !== 3;
+            
+            // Announce selection status to screen reader
+            const agentName = card.querySelector('.agent-name').textContent;
+            announceToScreenReader(isSelected ? 
+                `${agentName} deselected. ${count} of 3 agents selected.` :
+                `${agentName} selected. ${count} of 3 agents selected.`
+            );
+            
+            saveState();
+        }
+        
+        // Helper function to announce to screen readers
+        function announceToScreenReader(message) {
+            const announcement = document.getElementById('screenReaderAnnouncement');
+            if (announcement) {
+                announcement.textContent = message;
+            }
+        }
+        
+        function runSimulation(mode) {
+            const output = document.getElementById('simOutput');
+            
+            if (mode === 'os1') {
+                output.innerHTML = `
+<div class="event">Meeting 1: Policy Draft Presented (complexity: 0.4)
+├─ Dr. Chen (Care-4.8): "This increases student stress!"
+│  └─ Proposes: Add wellness supports
+├─ Prof. Rodriguez (Fairness-4.5): "This violates procedural fairness!"
+│  └─ Proposes: Standardize all mental health rules
+└─ Team <span class="lambda">λ: 0.58 → 0.51</span> (tension rising)</div>
+
+<div class="event">Meeting 2: Budget Constraints Introduced (complexity: 0.5)
+├─ Dean Wong (Authority-4.6): "We must follow state guidelines"
+│  └─ Blocks: Chen's wellness proposal (budget violation)
+├─ Kim (Loyalty-4.7): "Admin always cuts student needs!"
+│  └─ Predicts: "They're against us" (OS1 trap)
+└─ Team <span class="lambda">λ: 0.51 → 0.37</span> <span class="failure">⚠️ COLLAPSE IMMINENT</span></div>
+
+<div class="event">Meeting 3: Conflict Escalates (complexity: 0.6)
+├─ Rodriguez vs Chen: Fairness vs Care argument
+├─ Kim vs Wong: Loyalty vs Authority clash
+└─ Team <span class="lambda">λ: 0.37 → 0.28</span> <span class="failure">🚫 RECOVERY REQUIRED</span></div>
+
+<div class="failure">SIMULATION FAILED
+Committee disbanded after 3 meetings.
+No policy recommendation produced.</div>
+                `;
+                
+                document.getElementById('finalLambda').textContent = '0.28';
+                document.getElementById('finalLambda').className = 'lambda-value low';
+                document.getElementById('lambdaDescription').textContent = 
+                    'λ < 0.4: Coordination collapsed. Committee disbanded.';
+                    
+                document.getElementById('simulationResults').classList.remove('hidden');
+                document.getElementById('os2Intervention').classList.remove('hidden');
+            } else if (mode === 'os2') {
+                const intervention = appState.selectedIntervention || 'dual-track';
+                output.innerHTML = `
+<div class="event">Meeting 1: ${intervention === 'dual-track' ? 'Dual-Track Process Established' : 'OS2 Structure Implemented'}
+├─ VALUES: All agree "student welfare matters"
+├─ METHODS: Disagreement expected and respected
+└─ Team <span class="lambda">λ: 0.58 → 0.65</span> <span class="success">✓ Coordination!</span></div>
+
+<div class="event">Meeting 2: Each Contributes Their Capability
+├─ Chen: Monitors harm (Care expertise)
+├─ Rodriguez: Designs fair procedures (Fairness expertise)
+├─ Wong: Ensures compliance (Authority expertise)
+├─ Kim: Represents student voice (Loyalty expertise)
+└─ Team <span class="lambda">λ: 0.65 → 0.68</span> <span class="success">✓ Sustained</span></div>
+
+<div class="event">Meetings 3-6: Continued Coordination
+├─ Different predictions pooled as complementary capabilities
+├─ No one forced to agree on WHY policy is good
+├─ Each monitored their area of expertise
+└─ Team <span class="lambda">λ: 0.68 → 0.71</span> <span class="success">✓ Thriving</span></div>
+
+<div class="success">SIMULATION SUCCEEDED
+Policy completed after 6 meetings.
+Team produced comprehensive recommendation.</div>
+                `;
+                
+                document.getElementById('finalLambda').textContent = '0.71';
+                document.getElementById('finalLambda').className = 'lambda-value high';
+                document.getElementById('lambdaDescription').textContent = 
+                    'λ > 0.6: Coordination capacity functional. OS2 structure enabled pooling of diverse capabilities.';
+            }
+        }
+        
+        function selectIntervention(type) {
+            document.querySelectorAll('#os2Intervention .prf-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.target.closest('.prf-option').classList.add('selected');
+            appState.selectedIntervention = type;
+            document.getElementById('runOS2Btn').disabled = false;
+            saveState();
+        }
+        
+        // Module 3: Formal Agnosticism
+        function showInterpretation(prf) {
+            const interpretations = {
+                care: {
+                    meaning: "λ = capacity to respond compassionately without burning out",
+                    collapse: "λ < 0.4 means: People are suffering and I can't help them",
+                    strategy: "BioBond peer support activities",
+                    futurePull: "Universal compassion - minimize suffering across all scales"
+                },
+                fairness: {
+                    meaning: "λ = capacity to maintain procedural consistency",
+                    collapse: "λ < 0.4 means: System is unfair, procedures breaking down",
+                    strategy: "Transparent rule structures",
+                    futurePull: "Perfect justice - ensure equitable outcomes for all"
+                },
+                loyalty: {
+                    meaning: "λ = capacity to preserve group identity",
+                    collapse: "λ < 0.4 means: We're losing who we are as a group",
+                    strategy: "Cohort identity rituals",
+                    futurePull: "Strong cultural identity - preserve group coherence across generations"
+                },
+                sanctity: {
+                    meaning: "λ = capacity to protect sacred boundaries",
+                    collapse: "λ < 0.4 means: Boundaries violated, contamination threat",
+                    strategy: "Professional boundary protocols",
+                    futurePull: "Sacred boundary protection - maintain purity across domains"
+                },
+                authority: {
+                    meaning: "λ = capacity to sustain institutional order",
+                    collapse: "λ < 0.4 means: Hierarchy collapsing, chaos emerging",
+                    strategy: "Clear hierarchical structures",
+                    futurePull: "Stable hierarchies - sustain institutional order across time"
+                }
+            };
+            
+            const interp = interpretations[prf];
+            const detail = document.getElementById('interpretationDetail');
+            detail.innerHTML = `
+                <h4 style="color: var(--${prf}); margin-bottom: 16px; text-transform: capitalize;">${prf} Interpretation</h4>
+                <p><strong>What λ means:</strong> ${interp.meaning}</p>
+                <p><strong>When λ < 0.4:</strong> ${interp.collapse}</p>
+                <p><strong>OS2 strategy:</strong> ${interp.strategy}</p>
+                <p><strong>"Future pull":</strong> ${interp.futurePull}</p>
+            `;
+            detail.classList.remove('hidden');
+        }
+        
+        function testConvergence() {
+            const result = document.getElementById('convergenceResult');
+            result.innerHTML = `
+<div class="event">Test: University Mental Health Committee
+Team composition: All 5 PRF types represented
+
+Strategies pooled:
+├─ BioBond support groups (Care)
+├─ Transparent procedures (Fairness)
+├─ Student cohort programs (Loyalty)
+├─ Professional boundaries (Sanctity)
+└─ Clear institutional hierarchy (Authority)</div>
+
+<div class="event">Simulation Results:
+Initial <span class="lambda">λ: 0.58</span>
+After all 5 strategies implemented: <span class="lambda">λ: 0.76</span>
+<span class="success">✓ Higher than any single strategy alone!</span></div>
+
+<div class="success">EMPIRICAL CONVERGENCE VALIDATED
+
+Different PRF interpretations → Different strategies → Same outcome (λ > 0.6)
+
+They coordinated despite different "future pulls" because:
+1. All strategies empirically maintain coordination capacity
+2. Strategies are complementary, not contradictory
+3. No prediction agreement required - just capability pooling</div>
+            `;
+            result.classList.remove('hidden');
+        }
+        
+        // Module 4: Commons Timeline
+        const commonsData = [
+            {
+                year: 1,
+                prf: 'Care',
+                strategy: 'BioBond Activities',
+                test: 'BioBond peer support restores λ',
+                result: 'λ: 0.36 → 0.61 (p < 0.001)',
+                pool: ['BioBonds']
+            },
+            {
+                year: 2,
+                prf: 'Fairness',
+                strategy: 'Transparent Procedures',
+                test: 'Procedural transparency maintains λ',
+                result: 'λ: 0.67 vs 0.42 opaque (p < 0.01)',
+                convergence: 'BioBonds + Procedures = λ 0.69',
+                pool: ['BioBonds', 'Procedures']
+            },
+            {
+                year: 3,
+                prf: 'Loyalty',
+                strategy: 'Group Rituals',
+                test: 'Identity rituals sustain λ',
+                result: 'λ: 0.64 vs 0.39 control (p < 0.05)',
+                convergence: 'All three together = λ 0.71',
+                pool: ['BioBonds', 'Procedures', 'Rituals']
+            },
+            {
+                year: 4,
+                prf: 'Sanctity',
+                strategy: 'Boundary Protocols',
+                test: 'Boundaries prevent λ collapse',
+                result: 'λ: 0.58 vs 0.33 control (p < 0.05)',
+                convergence: 'All four together = λ 0.74',
+                pool: ['BioBonds', 'Procedures', 'Rituals', 'Boundaries']
+            },
+            {
+                year: 5,
+                prf: 'Authority',
+                strategy: 'Clear Hierarchies',
+                test: 'Hierarchies maintain λ during transitions',
+                result: 'λ: 0.63 vs 0.41 flat (p < 0.05)',
+                convergence: 'All five together = λ 0.76',
+                pool: ['BioBonds', 'Procedures', 'Rituals', 'Boundaries', 'Hierarchies']
+            }
+        ];
+        
+        function advanceYear() {
+            if (appState.commonsYear < commonsData.length) {
+                const data = commonsData[appState.commonsYear];
+                const timeline = document.getElementById('commonsTimeline');
+                
+                const yearDiv = document.createElement('div');
+                yearDiv.className = 'content-block';
+                yearDiv.innerHTML = `
+                    <h4>Year ${data.year}: ${data.prf} Testing</h4>
+                    <p><strong>Hypothesis:</strong> ${data.test}</p>
+                    <p><strong>Result:</strong> ${data.result}</p>
+                    ${data.convergence ? `<p><strong>Convergence test:</strong> ${data.convergence}</p>` : ''}
+                    <p style="color: var(--accent-cool); font-weight: 600;">✓ ${data.strategy} added to pool</p>
+                `;
+                timeline.appendChild(yearDiv);
+                
+                updateStrategyPool(data.pool);
+                appState.commonsYear++;
+                saveState();
+                
+                if (appState.commonsYear >= commonsData.length) {
+                    event.target.disabled = true;
+                    event.target.textContent = 'All Years Complete';
+                }
+            }
+        }
+        
+        function updateStrategyPool(pool) {
+            const container = document.getElementById('strategyPool');
+            container.innerHTML = pool.map((strategy, idx) => `
+                <div style="padding: 12px; background: var(--bg-secondary); border-radius: 6px; margin-bottom: 8px;">
+                    ${idx + 1}. ${strategy}
+                </div>
+            `).join('');
+        }
+        
+        // Module 5: Transmission
+        document.getElementById('weakFoundation')?.addEventListener('change', function(e) {
+            const foundation = e.target.value;
+            if (foundation) {
+                const plans = {
+                    care: "30-Day Care Development: Week 1) Identify 3 suffering sources you usually miss. Week 2) Practice compassionate responses. Week 3) Coordinate with Care-dominant person. Week 4) Integrate Care lens into decisions.",
+                    fairness: "30-Day Fairness Development: Week 1) Identify 3 procedural inconsistencies you usually miss. Week 2) Practice fairness analysis. Week 3) Coordinate with Fairness-dominant person. Week 4) Design one fair procedure.",
+                    loyalty: "30-Day Loyalty Development: Week 1) Identify 3 group identity markers you usually miss. Week 2) Practice belonging-building. Week 3) Coordinate with Loyalty-dominant person. Week 4) Create one group ritual.",
+                    authority: "30-Day Authority Development: Week 1) Identify 3 structural needs you usually miss. Week 2) Practice hierarchical thinking. Week 3) Coordinate with Authority-dominant person. Week 4) Design one clear structure.",
+                    sanctity: "30-Day Sanctity Development: Week 1) Identify 3 boundary violations you usually miss. Week 2) Practice boundary-setting. Week 3) Coordinate with Sanctity-dominant person. Week 4) Establish one clear boundary."
+                };
+                document.getElementById('practicePlan').innerHTML = `
+                    <p><strong>Practice Protocol:</strong></p>
+                    <p>${plans[foundation]}</p>
+                    <p class="mt-24" style="color: var(--text-tertiary);">Expected improvement: ${foundation.charAt(0).toUpperCase() + foundation.slice(1)} +0.5 to +1.0 after 30 days</p>
+                `;
+            }
+        });
+        
+        // Module 6: Reflections
+        function saveReflections() {
+            appState.reflectionJournal.push({
+                interpretation: document.getElementById('reflection1').value,
+                futurePull: document.getElementById('reflection2').value,
+                modifications: document.getElementById('reflection3').value
+            });
+            saveState();
+            alert('Reflections saved! You can download your complete journal below.');
+        }
+        
+        function downloadJournal() {
+            const journal = [];
+            journal.push('='.repeat(60));
+            journal.push('TRANS-TEMPORAL ETHICS REFLECTION JOURNAL');
+            journal.push('='.repeat(60));
+            journal.push('');
+            
+            if (appState.prfProfile) {
+                journal.push('YOUR PRF PROFILE:');
+                Object.entries(appState.prfProfile).forEach(([f, v]) => {
+                    journal.push(`  ${f.charAt(0).toUpperCase() + f.slice(1)}: ${v.toFixed(1)}`);
+                });
+                journal.push('');
+            }
+            
+            journal.push('MODULE 5: TRANSMISSION AUDIT');
+            journal.push('-'.repeat(60));
+            journal.push('Product (Who built me):');
+            journal.push(document.getElementById('productPeople')?.value || '[Not completed]');
+            journal.push('');
+            journal.push('Coordination patterns received:');
+            journal.push(document.getElementById('productPatterns')?.value || '[Not completed]');
+            journal.push('');
+            journal.push('Transmitter (Who am I building):');
+            journal.push(document.getElementById('transmitterPeople')?.value || '[Not completed]');
+            journal.push('');
+            
+            if (appState.reflectionJournal.length > 0) {
+                journal.push('MODULE 6: FINAL REFLECTIONS');
+                journal.push('-'.repeat(60));
+                appState.reflectionJournal.forEach((r, idx) => {
+                    journal.push(`Reflection Set ${idx + 1}:`);
+                    journal.push('');
+                    journal.push('How does YOUR PRF interpret this framework?');
+                    journal.push(r.interpretation);
+                    journal.push('');
+                    journal.push('What "future pull" does your interpretation generate?');
+                    journal.push(r.futurePull);
+                    journal.push('');
+                    journal.push('What modifications would you suggest?');
+                    journal.push(r.modifications);
+                    journal.push('');
+                });
+            }
+            
+            journal.push('='.repeat(60));
+            journal.push('Be a good ancestor.');
+            journal.push('='.repeat(60));
+            
+            const journalText = journal.join('\n');
+            
+            // Show in modal with copy button (works in sandboxed environments)
+            showJournalModal(journalText);
+            
+            // Also try programmatic download (works in normal browsers)
+            try {
+                const blob = new Blob([journalText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'trans_temporal_ethics_journal.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                // Download blocked - modal is already shown
+                console.log('Download blocked, using modal fallback');
+            }
+        }
+        
+        function showJournalModal(journalText) {
+            // Create modal overlay
+            const modal = document.createElement('div');
+            modal.id = 'journalModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(42, 37, 32, 0.9);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: var(--bg-primary);
+                    border-radius: 12px;
+                    max-width: 800px;
+                    width: 100%;
+                    max-height: 90vh;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+                ">
+                    <div style="padding: 24px; border-bottom: 1px solid var(--border);">
+                        <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.5rem;">Your Reflection Journal</h3>
+                        <p style="margin: 8px 0 0 0; color: var(--text-secondary); font-size: 0.9rem;">Copy the text below or download the file if available</p>
+                    </div>
+                    
+                    <div style="padding: 24px; overflow-y: auto; flex: 1;">
+                        <textarea id="journalText" readonly style="
+                            width: 100%;
+                            height: 400px;
+                            padding: 16px;
+                            border: 1px solid var(--border);
+                            border-radius: 8px;
+                            font-family: 'Courier New', monospace;
+                            font-size: 0.9rem;
+                            line-height: 1.6;
+                            resize: vertical;
+                            background: white;
+                            color: var(--text-primary);
+                        ">${journalText}</textarea>
+                    </div>
+                    
+                    <div style="padding: 24px; border-top: 1px solid var(--border); display: flex; gap: 12px; justify-content: flex-end;">
+                        <button onclick="copyJournalText()" class="btn btn-primary" style="font-size: 0.95rem;">
+                            Copy to Clipboard
+                        </button>
+                        <button onclick="closeJournalModal()" class="btn btn-secondary" style="font-size: 0.95rem;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Focus on textarea and select all
+            setTimeout(() => {
+                const textarea = document.getElementById('journalText');
+                textarea.focus();
+                textarea.select();
+            }, 100);
+            
+            // Close on background click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeJournalModal();
+                }
+            });
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function escapeHandler(e) {
+                if (e.key === 'Escape') {
+                    closeJournalModal();
+                    document.removeEventListener('keydown', escapeHandler);
+                }
+            });
+        }
+        
+        function copyJournalText() {
+            const textarea = document.getElementById('journalText');
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                announceToScreenReader('Journal copied to clipboard');
+                
+                // Visual feedback
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = 'var(--accent-cool)';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            } catch (err) {
+                alert('Please manually select and copy the text above');
+            }
+        }
+        
+        function closeJournalModal() {
+            const modal = document.getElementById('journalModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function resetApp() {
+            if (confirm('This will erase all progress and start over. Are you sure?')) {
+                localStorage.removeItem('transTemporalEthicsState');
+                location.reload();
+            }
+        }
+        
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
 </body>
 </html>
