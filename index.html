@@ -456,6 +456,21 @@
             position: relative;
         }
         
+        .prf-option:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+        }
+        
+        .prf-option.selected {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+        
+        .prf-option.selected strong {
+            color: white !important;
+        }
+        
         .prf-option:has(input:checked) {
             background: var(--accent-primary);
             color: white;
@@ -890,28 +905,28 @@
                 <p>Select 3 agents to serve on a university mental health policy committee. Each has different PRFs and predictions:</p>
                 
                 <div id="agentLibrary" role="group" aria-label="Available committee members">
-                    <button class="agent-card" onclick="toggleAgent('chen')" aria-pressed="false" data-agent="chen">
+                    <button class="agent-card" onclick="toggleAgent('chen', event)" aria-pressed="false" data-agent="chen">
                         <div class="agent-name">Dr. Sarah Chen</div>
                         <div class="agent-prf">Care: 4.8, Fairness: 3.2</div>
                         <div class="agent-prediction">"Students are suffering - we need immediate support"</div>
                         <span class="sr-only">Select Dr. Sarah Chen for committee</span>
                     </button>
                     
-                    <button class="agent-card" onclick="toggleAgent('rodriguez')" aria-pressed="false" data-agent="rodriguez">
+                    <button class="agent-card" onclick="toggleAgent('rodriguez', event)" aria-pressed="false" data-agent="rodriguez">
                         <div class="agent-name">Prof. Marcus Rodriguez</div>
                         <div class="agent-prf">Fairness: 4.5, Authority: 4.0</div>
                         <div class="agent-prediction">"Procedures are inconsistent - we need standardized policies"</div>
                         <span class="sr-only">Select Professor Marcus Rodriguez for committee</span>
                     </button>
                     
-                    <button class="agent-card" onclick="toggleAgent('wong')" aria-pressed="false" data-agent="wong">
+                    <button class="agent-card" onclick="toggleAgent('wong', event)" aria-pressed="false" data-agent="wong">
                         <div class="agent-name">Dean Patricia Wong</div>
                         <div class="agent-prf">Authority: 4.6, Sanctity: 3.8</div>
                         <div class="agent-prediction">"We must follow state guidelines and protect professional boundaries"</div>
                         <span class="sr-only">Select Dean Patricia Wong for committee</span>
                     </button>
                     
-                    <button class="agent-card" onclick="toggleAgent('kim')" aria-pressed="false" data-agent="kim">
+                    <button class="agent-card" onclick="toggleAgent('kim', event)" aria-pressed="false" data-agent="kim">
                         <div class="agent-name">Student Rep. Alex Kim</div>
                         <div class="agent-prf">Loyalty: 4.7, Care: 3.5</div>
                         <div class="agent-prediction">"Admin will ignore student needs - we need student voice protected"</div>
@@ -943,19 +958,19 @@
                 <h3>Add OS2 Coordination Structure</h3>
                 <p>The committee failed in OS1 mode (forcing prediction agreement). Let's add an OS2 structure:</p>
                 
-                <div class="interactive-demo">
-                    <div class="prf-option" onclick="selectIntervention('capability')">
+                <div class="interactive-demo" role="radiogroup" aria-label="Select OS2 intervention type">
+                    <button class="prf-option" onclick="selectIntervention('capability')" type="button" data-intervention="capability">
                         <strong>Capability Mapping</strong><br>
                         Each member states what they're good at and what they need help with
-                    </div>
-                    <div class="prf-option" onclick="selectIntervention('dual-track')">
+                    </button>
+                    <button class="prf-option" onclick="selectIntervention('dual-track')" type="button" data-intervention="dual-track">
                         <strong>Dual-Track Process</strong><br>
                         Separate "Values" (what we care about) from "Methods" (how to get there)
-                    </div>
-                    <div class="prf-option" onclick="selectIntervention('rotation')">
+                    </button>
+                    <button class="prf-option" onclick="selectIntervention('rotation')" type="button" data-intervention="rotation">
                         <strong>Rotating Facilitator</strong><br>
                         Different PRF leads each week (Care → Fairness → Authority)
-                    </div>
+                    </button>
                 </div>
                 
                 <button class="btn btn-primary mt-24" onclick="runSimulation('os2')" id="runOS2Btn" disabled>Re-run with OS2 Structure</button>
@@ -996,31 +1011,31 @@
                 <h3>Five PRF Interpretations</h3>
                 <p>Click each to see how different moral foundations interpret the same formalism:</p>
                 
-                <div id="prfInterpretations">
-                    <div class="prf-option" onclick="showInterpretation('care')">
+                <div id="prfInterpretations" role="group" aria-label="PRF interpretations">
+                    <button class="prf-option" onclick="showInterpretation('care')" type="button" data-prf="care">
                         <strong style="color: var(--care);">Care Interpretation</strong><br>
                         λ = capacity to respond compassionately without burnout
-                    </div>
+                    </button>
                     
-                    <div class="prf-option" onclick="showInterpretation('fairness')">
+                    <button class="prf-option" onclick="showInterpretation('fairness')" type="button" data-prf="fairness">
                         <strong style="color: var(--fairness);">Fairness Interpretation</strong><br>
                         λ = capacity to maintain procedural consistency under pressure
-                    </div>
+                    </button>
                     
-                    <div class="prf-option" onclick="showInterpretation('loyalty')">
+                    <button class="prf-option" onclick="showInterpretation('loyalty')" type="button" data-prf="loyalty">
                         <strong style="color: var(--loyalty);">Loyalty Interpretation</strong><br>
                         λ = capacity to preserve group identity during change
-                    </div>
+                    </button>
                     
-                    <div class="prf-option" onclick="showInterpretation('sanctity')">
+                    <button class="prf-option" onclick="showInterpretation('sanctity')" type="button" data-prf="sanctity">
                         <strong style="color: var(--sanctity);">Sanctity Interpretation</strong><br>
                         λ = capacity to protect sacred boundaries against violation
-                    </div>
+                    </button>
                     
-                    <div class="prf-option" onclick="showInterpretation('authority')">
+                    <button class="prf-option" onclick="showInterpretation('authority')" type="button" data-prf="authority">
                         <strong style="color: var(--authority);">Authority Interpretation</strong><br>
                         λ = capacity to sustain institutional order during stress
-                    </div>
+                    </button>
                 </div>
                 
                 <div class="interactive-demo hidden" id="interpretationDetail">
@@ -1582,8 +1597,8 @@
         }
         
         // Module 2: Coordination Simulator
-        function toggleAgent(agentId) {
-            const card = event.target.closest('.agent-card');
+        function toggleAgent(agentId, event) {
+            const card = event.currentTarget; // Use currentTarget instead of closest()
             const isSelected = card.getAttribute('aria-pressed') === 'true';
             
             if (isSelected) {
@@ -1694,17 +1709,41 @@ Team produced comprehensive recommendation.</div>
         }
         
         function selectIntervention(type) {
+            // Clear all selections
             document.querySelectorAll('#os2Intervention .prf-option').forEach(opt => {
                 opt.classList.remove('selected');
+                opt.setAttribute('aria-pressed', 'false');
             });
-            event.target.closest('.prf-option').classList.add('selected');
+            
+            // Find and select the clicked button
+            const selectedBtn = document.querySelector(`#os2Intervention .prf-option[data-intervention="${type}"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('selected');
+                selectedBtn.setAttribute('aria-pressed', 'true');
+            }
+            
             appState.selectedIntervention = type;
             document.getElementById('runOS2Btn').disabled = false;
+            
+            // Announce to screen reader
+            announceToScreenReader(`${type} intervention selected`);
+            
             saveState();
         }
         
         // Module 3: Formal Agnosticism
         function showInterpretation(prf) {
+            // Clear all selections
+            document.querySelectorAll('#prfInterpretations .prf-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Select clicked button
+            const selectedBtn = document.querySelector(`#prfInterpretations .prf-option[data-prf="${prf}"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('selected');
+            }
+            
             const interpretations = {
                 care: {
                     meaning: "λ = capacity to respond compassionately without burning out",
@@ -1748,6 +1787,9 @@ Team produced comprehensive recommendation.</div>
                 <p><strong>"Future pull":</strong> ${interp.futurePull}</p>
             `;
             detail.classList.remove('hidden');
+            
+            // Announce to screen reader
+            announceToScreenReader(`Showing ${prf} interpretation`);
         }
         
         function testConvergence() {
